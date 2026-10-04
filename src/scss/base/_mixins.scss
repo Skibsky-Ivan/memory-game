@@ -1,0 +1,7 @@
+@function watercolor-spot($color, $w, $h, $x, $y, $alpha: 0.15) {
+  @return radial-gradient(
+    ellipse #{$w} #{$h} at #{$x} #{$y},
+    rgba($color, $alpha),
+    transparent 70%
+  );
+}

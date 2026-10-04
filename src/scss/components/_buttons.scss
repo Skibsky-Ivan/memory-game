@@ -1,0 +1,41 @@
+@use 'sass:color';
+@use '../base/variables' as *;
+
+.btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 10px;
+  background-color: $color-primary;
+  color: #fff;
+  font-weight: 600;
+  box-shadow: $shadow-soft;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    background-color: $color-primary-hover;
+    transform: translateY(-1px);
+    box-shadow: $shadow-lift;
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+
+  &--secondary {
+    background-color: $color-surface;
+    color: $color-text;
+    border: 1px solid color.adjust($color-bg, $lightness: -12%);
+
+    &:hover {
+      background-color: $color-primary-light;
+      color: $color-text;
+    }
+  }
+}
