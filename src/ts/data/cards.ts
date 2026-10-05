@@ -12,6 +12,8 @@ export interface TypeCard {
   url: string;
 }
 
+export const TOTAL_PAIRS = 8;
+
 export const cards: Card[] = [
   { type: 'cosmos_pink', url: flower1 },
   { type: 'dandelion', url: flower2 },
