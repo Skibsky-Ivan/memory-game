@@ -1,26 +1,22 @@
 import { createButton } from './button';
+import { LeaderboardResult } from '../storage/leaderboard';
 
 export interface Win {
   numberMoves: number;
 }
 
-interface LeaderboardResult {
-  moves: number;
-  date: string;
-}
-
 export function createModal() {
   const modalOverlay = document.createElement('div');
-  modalOverlay.role = 'dialog';
+  modalOverlay.setAttribute('role', 'dialog');
+  modalOverlay.setAttribute('aria-modal', 'true');
   modalOverlay.classList.add('modal-overlay');
-  modalOverlay.setAttribute('aria-modal', true);
 
   const modal = document.createElement('div');
   modal.classList.add('modal');
   modalOverlay.append(modal);
 
-  function closeModal() {
-    modalOverlay.classList.remoce('is-active');
+  function closeModal(): void {
+    modalOverlay.classList.remove('is-active');
     document.documentElement.classList.remove('is-locked');
     modal.replaceChildren();
   }
@@ -30,12 +26,12 @@ export function createModal() {
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modalOverlay.classList.contains('is-actice')) {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('is-active')) {
       closeModal();
     }
   });
 
-  return modalOverlay;
+  return { overlay: modalOverlay, modal, closeModal };
 }
 
 // ---------- Win modal ---------------
@@ -118,7 +114,7 @@ export function createLeaderboardContent(
     moves.textContent = String(result.moves);
 
     const date = document.createElement('td');
-    date.textContent = result.date;
+    date.textContent = result.dateS;
 
     row.append(place, moves, date);
     tbody.append(row);

@@ -1,4 +1,5 @@
 import { createButton } from './button';
+import { TOTAL_PAIRS } from '../data/cards';
 
 function createStatItem(
   label: string,
@@ -39,4 +40,14 @@ export function createHeader(): HTMLElement {
 
   header.append(controls, stats);
   return header;
+}
+
+export function updateCounters(moves: number, pairs?: number) {
+  const counterMoves = document.querySelector('#moves-count');
+  const counterPairs = document.querySelector('#pairs-count');
+
+  if (counterMoves) counterMoves.textContent = String(moves);
+  if (pairs !== undefined && counterPairs) {
+    counterPairs.textContent = `${pairs} из ${TOTAL_PAIRS}`;
+  }
 }
