@@ -114,7 +114,7 @@ export function createLeaderboardContent(
     moves.textContent = String(result.moves);
 
     const date = document.createElement('td');
-    date.textContent = result.dateS;
+    date.textContent = result.dateDisplay;
 
     row.append(place, moves, date);
     tbody.append(row);
