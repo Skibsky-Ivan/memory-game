@@ -1,0 +1,12 @@
+# Зависимости
+node_modules/
+
+# Папка сборки Vite
+dist/
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+
+# Логи
+*.log

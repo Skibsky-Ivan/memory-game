@@ -1,0 +1,25 @@
+@use 'sass:color';
+
+// ---- Палитра ----
+$color-bg: #fbf5dd;
+$color-surface: #efedd2;
+$color-primary: #c1b56d;
+$color-primary-hover: color.adjust($color-primary, $lightness: -12%);
+$color-primary-light: color.adjust($color-primary, $lightness: 12%);
+$color-text: #4e5449;
+$color-text-muted: color.adjust($color-text, $lightness: 30%);
+$color-accent: #ee5569;
+$color-success: #a4da92;
+
+// ---- Размеры ----
+$board-max-width: 600px;
+$card-radius: 14px;
+$flip-duration: 0.5s;
+
+// ---- Отступы ----
+$gap-board: 14px;
+$gap-header: 40px;
+
+// ---- Тени ----
+$shadow-soft: 0 2px 8px rgba($color-text, 0.3);
+$shadow-lift: 0 6px 18px rgba($color-text, 0.2);

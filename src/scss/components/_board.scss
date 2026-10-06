@@ -1,0 +1,97 @@
+@use '../base/variables' as *;
+
+.game-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: $gap-board;
+  animation: board-fade-in 0.4s ease;
+}
+
+@keyframes board-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ---------- Карточка ----------
+
+.card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  padding: 0;
+  perspective: 600px;
+  border-radius: $card-radius;
+  -webkit-tap-highlight-color: transparent;
+
+  &:focus-visible {
+    outline: 2px solid $color-primary;
+    outline-offset: 3px;
+  }
+}
+
+.card__inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform $flip-duration ease;
+}
+
+.card__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: $card-radius;
+  backface-visibility: hidden;
+  overflow: hidden;
+  box-shadow: $shadow-soft;
+}
+
+.card__face--front {
+  background: rgba($color-primary, 0.6);
+  color: rgba(#fff, 0.9);
+  font-size: 2rem;
+  font-weight: 700;
+
+  span {
+    text-shadow: 0 1px 2px rgba($color-text, 0.25);
+  }
+  &:hover {
+    background-color: #e0dbc3;
+  }
+}
+
+.card__face--back {
+  background-color: $color-surface;
+  transform: rotateY(180deg);
+  padding: 0.5rem;
+}
+
+.card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc($card-radius - 6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.card.is-open .card__inner {
+  transform: rotateY(180deg);
+}
+
+.card.is-matched {
+  cursor: default;
+
+  .card__face--back {
+    box-shadow:
+      0 0 0 2px $color-success,
+      $shadow-soft;
+  }
+}
