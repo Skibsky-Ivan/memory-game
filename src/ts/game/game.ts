@@ -1,4 +1,3 @@
-import { getState, incrementMoves, incrementPairs, reset } from './store';
 import { TOTAL_PAIRS } from '../data/cards';
 import { saveRecord } from '../storage/leaderboard';
 import { updateCounters } from '../ui/header';
@@ -6,16 +5,27 @@ import { updateCounters } from '../ui/header';
 const CLOSE_DELAY_MS = 1000;
 const PAIR_SIZE = 2;
 
-let lockBoard = false;
-let currentCards: HTMLElement[] = [];
-let closeTimerId: number | null = null;
+interface GameState {
+  moves: number;
+  pairsFound: number;
+  lockBoard: boolean;
+  currentCards: HTMLElement[];
+  closeTimerId: number | null;
+}
 
 interface GameHooks {
   onWin: (moves: number) => void;
 }
 
-let hooks: GameHooks | null = null;
+const state: GameState = {
+  moves: 0,
+  pairsFound: 0,
+  lockBoard: false,
+  currentCards: [],
+  closeTimerId: null,
+};
 
+let hooks: GameHooks | null = null;
 export function initGame(gameHooks: GameHooks): void {
   hooks = gameHooks;
 }
@@ -39,54 +49,54 @@ function isPair(cards: HTMLElement[]): boolean {
 function timerClose(cards: HTMLElement[]): number {
   const timerId = setTimeout(() => {
     cards.forEach((card) => closeCard(card));
-    lockBoard = false;
-    currentCards = [];
-    closeTimerId = null;
+    state.lockBoard = false;
+    state.currentCards = [];
+    state.closeTimerId = null;
   }, CLOSE_DELAY_MS);
   return timerId;
 }
 
 export function gameLoop(e: MouseEvent): void {
-  if (lockBoard) return;
+  if (state.lockBoard) return;
 
   const card = (e.target as HTMLElement).closest<HTMLElement>('.card');
   if (!card) return;
   if (card.classList.contains('is-open')) return;
 
   openCard(card);
-  currentCards.push(card);
-  if (currentCards.length < PAIR_SIZE) return;
+  state.currentCards.push(card);
+  if (state.currentCards.length < PAIR_SIZE) return;
 
-  incrementMoves();
+  state.moves++;
 
-  if (isPair(currentCards)) {
-    incrementPairs();
-    matchedCards(currentCards);
-    currentCards = [];
+  if (isPair(state.currentCards)) {
+    state.pairsFound++;
+    matchedCards(state.currentCards);
+    state.currentCards = [];
 
-    const state = getState();
-    updateCounters(state.countMoves, state.countPairs);
+    updateCounters(state.moves, state.pairsFound);
 
-    if (state.countPairs === TOTAL_PAIRS) {
-      saveRecord(state.countMoves);
-      hooks?.onWin(state.countMoves);
+    if (state.pairsFound === TOTAL_PAIRS) {
+      saveRecord(state.moves);
+      hooks?.onWin(state.moves);
     }
   } else {
-    lockBoard = true;
-    closeTimerId = timerClose(currentCards);
-    updateCounters(getState().countMoves);
+    state.lockBoard = true;
+    state.closeTimerId = timerClose(state.currentCards);
+    updateCounters(state.moves);
   }
 }
 
 export function startNewGame(): void {
-  if (closeTimerId !== null) {
-    clearTimeout(closeTimerId);
-    closeTimerId = null;
+  if (state.closeTimerId !== null) {
+    clearTimeout(state.closeTimerId);
+    state.closeTimerId = null;
   }
 
-  lockBoard = false;
-  currentCards = [];
+  state.lockBoard = false;
+  state.currentCards = [];
+  state.moves = 0;
+  state.pairsFound = 0;
 
-  reset();
   updateCounters(0, 0);
 }
