@@ -1,19 +1,23 @@
-import { createButton } from './button';
 import { LeaderboardResult } from '../storage/leaderboard';
+import { el } from './dom';
 
 export interface Win {
   numberMoves: number;
 }
 
 export function createModal() {
-  const modalOverlay = document.createElement('div');
-  modalOverlay.setAttribute('role', 'dialog');
-  modalOverlay.setAttribute('aria-modal', 'true');
-  modalOverlay.classList.add('modal-overlay');
-
-  const modal = document.createElement('div');
-  modal.classList.add('modal');
-  modalOverlay.append(modal);
+  const modal = el('div', { class: 'modal' });
+  const modalOverlay = el(
+    'div',
+    {
+      class: 'modal-overlay',
+      attrs: {
+        role: 'dialog',
+        'aria-modal': 'true',
+      },
+    },
+    [modal]
+  );
 
   function closeModal(): void {
     modalOverlay.classList.remove('is-active');
@@ -36,34 +40,35 @@ export function createModal() {
 
 // ---------- Win modal ---------------
 
-export function createWinContent(data: Win) {
+export function createWinContent(data: Win): DocumentFragment {
   const content = document.createDocumentFragment();
 
-  const title = document.createElement('h2');
-  title.classList.add('modal__title');
-  title.id = 'modal__title';
-  title.textContent = 'Победа!';
+  const title = el('h2', {
+    id: 'modal__title',
+    class: 'modal__title',
+    text: 'Победа!',
+  });
 
-  const body = document.createElement('div');
-  body.classList.add('modal__body');
+  const body = el('div', { class: 'modal__body' }, [
+    el('p', { text: 'Вы успешно нашли все пары!' }),
+    el('p', {}, [
+      'Итоговое количество ходов: ',
+      el('strong', { text: String(data.numberMoves) }),
+    ]),
+  ]);
 
-  const line1 = document.createElement('p');
-  line1.textContent = 'Вы успешно нашли все пары!';
-
-  const line2 = document.createElement('p');
-  const strong = document.createElement('strong');
-  strong.textContent = String(data.numberMoves);
-  line2.append('Итоговое количество ходов: ', strong);
-
-  body.append(line1, line2);
-
-  const actions = document.createElement('div');
-  actions.classList.add('modal__actions');
-
-  const btnNewGame = createButton('modal-btn-new-game', 'Новая игра');
-  const btnClose = createButton('modal-btn-close', 'Закрыть');
-  btnClose.classList.add('btn--secondary');
-  actions.append(btnNewGame, btnClose);
+  const actions = el('div', { class: 'modal__actions' }, [
+    el('button', {
+      id: 'modal-btn-new-game',
+      class: 'btn',
+      text: 'Новая игра',
+    }),
+    el('button', {
+      id: 'modal-btn-close',
+      class: 'btn btn--secondary',
+      text: 'Закрыть',
+    }),
+  ]);
 
   content.append(title, body, actions);
   return content;
@@ -73,61 +78,47 @@ export function createWinContent(data: Win) {
 
 export function createLeaderboardContent(
   results: LeaderboardResult[]
-): HTMLElement {
+): DocumentFragment {
   const content = document.createDocumentFragment();
 
-  const title = document.createElement('h2');
-  title.classList.add('modal__title');
-  title.textContent = 'Таблица лидеров';
-
-  const body = document.createElement('div');
-  body.classList.add('modal__body');
+  const title = el('h2', { class: 'modal__title', text: 'Таблица лидеров' });
+  const body = el('div', { class: 'modal__body' });
+  const actions = el('div', { class: 'modal__actions' }, [
+    el('button', {
+      id: 'modal-btn-close',
+      class: 'btn btn--secondary',
+      text: 'Закрыть',
+    }),
+  ]);
 
   if (results.length === 0) {
-    const empty = document.createElement('p');
-    empty.classList.add('leaderboard-empty');
-    empty.textContent = 'Пока нет результатов';
+    const empty = el('p', {
+      class: 'leaderboard-empty',
+      text: 'Пока нет результатов',
+    });
     body.append(empty);
-    return body;
+    content.append(title, body, actions);
+    return content;
   }
 
-  const table = document.createElement('table');
-  table.classList.add('leaderboard-table');
+  const headRow = el(
+    'tr',
+    {},
+    ['Место', 'Ходы', 'Дата'].map((label) => el('th', { text: label }))
+  );
 
-  const thead = document.createElement('thead');
-  const headRow = document.createElement('tr');
-  ['Место', 'Ходы', 'Дата'].forEach((label) => {
-    const th = document.createElement('th');
-    th.textContent = label;
-    headRow.append(th);
-  });
-  thead.append(headRow);
-
-  const tbody = document.createElement('tbody');
+  const tBody = el('tbody');
   results.forEach((result, index) => {
-    const row = document.createElement('tr');
-
-    const place = document.createElement('td');
-    place.textContent = String(index + 1);
-
-    const moves = document.createElement('td');
-    moves.textContent = String(result.moves);
-
-    const date = document.createElement('td');
-    date.textContent = result.dateDisplay;
-
-    row.append(place, moves, date);
-    tbody.append(row);
+    const row = el('tr', {}, [
+      el('td', { text: String(index + 1) }),
+      el('td', { text: String(result.moves) }),
+      el('td', { text: result.dateDisplay }),
+    ]);
+    tBody.append(row);
   });
 
-  table.append(thead, tbody);
+  const table = el('table', { class: 'leaderboard-table' }, [headRow, tBody]);
   body.append(table);
-
-  const actions = document.createElement('div');
-  actions.classList.add('modal__actions');
-  const btnClose = createButton('modal-btn-close', 'Закрыть');
-  btnClose.classList.add('btn--secondary');
-  actions.append(btnClose);
 
   content.append(title, body, actions);
   return content;

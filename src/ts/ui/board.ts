@@ -1,19 +1,21 @@
 import { TypeCard, cards } from '../data/cards';
 import { createCard } from './card';
 import { shuffle } from '../utils/shuffle';
+import { el } from './dom';
 
 export function createGameBoard(): HTMLElement {
-  const gameBoard = document.createElement('main');
-  gameBoard.classList.add('game-board');
-  gameBoard.id = 'game-board';
-
   const allCards = [...cards, ...cards];
   const shuffleCards = shuffle<TypeCard>(allCards);
+  const cardsHTML = shuffleCards.map((card) => createCard(card.type, card.url));
 
-  for (const cardData of shuffleCards) {
-    const card = createCard(cardData.type, cardData.url);
-    gameBoard.append(card);
-  }
+  const gameBoard = el(
+    'main',
+    {
+      id: 'game-board',
+      class: 'game-board',
+    },
+    cardsHTML
+  );
 
   return gameBoard;
 }
